@@ -39,7 +39,7 @@ var Leaderboard = function (_React$Component2) {
     var number = 0;
     return React.createElement(
       "div",
-      { className: "container" },
+      { className: "container", id: "leaderboard" },
       React.createElement(
         "h2",
         null,
@@ -65,7 +65,6 @@ var TopRow = function (_React$Component3) {
   }
 
   TopRow.prototype.handleClick = function handleClick(e) {
-
     var buttonText = e.currentTarget.textContent;
     var list = buttonText == 'All time points ' ? 'alltime' : 'recent';
     this.props.changeList(list);

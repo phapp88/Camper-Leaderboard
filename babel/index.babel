@@ -12,7 +12,7 @@ class Leaderboard extends React.Component {
   render() {
     let number = 0;
     return (
-      <div className="container">
+      <div className="container" id="leaderboard">
         <h2>Leaderboard</h2>
         <TopRow list={this.props.list} changeList={this.props.changeList}/>
         {this.props.campers.map(function(camper){
@@ -25,7 +25,6 @@ class Leaderboard extends React.Component {
 
 class TopRow extends React.Component {
   handleClick(e) {
-    
     const buttonText = e.currentTarget.textContent;
     const list = buttonText == 'All time points ' ? 'alltime' : 'recent';
     this.props.changeList(list);
