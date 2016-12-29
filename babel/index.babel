@@ -1,0 +1,132 @@
+class Header extends React.Component {
+  render() {
+    return (
+      <header>
+        <img src="https://dl.dropboxusercontent.com/s/rmrtek8455aou15/fccLogo.png?dl=0" alt="fcc logo"/>
+      </header>
+    );
+  }
+}
+
+class Leaderboard extends React.Component {
+  render() {
+    let number = 0;
+    return (
+      <div className="container">
+        <h2>Leaderboard</h2>
+        <TopRow list={this.props.list} changeList={this.props.changeList}/>
+        {this.props.campers.map(function(camper){
+          return <CamperRow number={++number} camper={camper} />;
+          })}
+      </div>
+    );
+  }
+}
+
+class TopRow extends React.Component {
+  handleClick(e) {
+    
+    const buttonText = e.currentTarget.textContent;
+    const list = buttonText == 'All time points ' ? 'alltime' : 'recent';
+    this.props.changeList(list);
+  }
+  
+  render() {
+    const recentIconClassName = this.props.list == 'recent' ? 'fa fa-sort-desc' : '';
+    const alltimeIconClassName = this.props.list == 'alltime' ? 'fa fa-sort-desc' : '';
+    return (
+      <div className="row" id="topRow">
+        <div className="col-xs-1 text-left">#</div>
+        <div className="col-xs-3 text-left">Camper Name</div>
+        <div className="col-xs-4">
+          <p onClick={this.handleClick.bind(this)}>
+            <u>Points in past 30 days <i className={recentIconClassName}></i></u>
+          </p>
+        </div>
+        <div className="col-xs-4">
+          <p onClick={this.handleClick.bind(this)}>
+            <u>All time points <i className={alltimeIconClassName}></i></u>
+          </p>
+        </div>
+      </div>
+    );
+  }
+}
+
+class CamperRow extends React.Component {
+  render() {
+    const url = `https://www.freecodecamp.com/${this.props.camper.username}`;
+    const parentClass = this.props.number % 2 === 0 ? 'row' : 'row odd';
+    return (
+      <div className={parentClass}>
+        <div className="col-xs-1 text-left">{this.props.number}</div>
+        <div className="col-xs-3 text-left">
+          <a href={url} target="_blank">
+            <img src={this.props.camper.img} />
+            {this.props.camper.username}
+          </a>
+        </div>
+        <div className="col-xs-4">{this.props.camper.recent}</div>
+        <div className="col-xs-4">{this.props.camper.alltime}</div>
+      </div>
+    );
+  }
+}
+
+class Footer extends React.Component {
+  render() {
+    return (
+      <footer>By <a href="https://www.freecodecamp.com/phapp88" target="_blank">Paul Happ</a></footer>
+    );
+  }
+}
+
+class Layout extends React.Component{
+  constructor() {
+    super();
+    this.state = {
+      campers: [],
+      list: 'recent'
+    };
+    this.getData = this.getData.bind(this);
+  }
+  
+  getData(dataUrl) {
+    const _this = this;
+    const xhr = new XMLHttpRequest(),
+      method = 'GET',
+      url = dataUrl;
+    
+    xhr.responseType = 'json';
+    xhr.open(method, url);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        _this.setState({campers: xhr.response.map(obj => obj)});
+      }
+    };
+    xhr.send();
+  }
+  
+  changeList(list) {
+    this.setState({list});
+    this.getData(`https://fcctop100.herokuapp.com/api/fccusers/top/${list}`);
+  }
+  
+  render() {
+    return (
+      <div>
+        <Header />
+        <Leaderboard campers={this.state.campers} list={this.state.list} changeList={this.changeList.bind(this)} />
+        <Footer />
+      </div>
+    );
+  }
+  
+  componentDidMount() {
+    this.getData(`https://fcctop100.herokuapp.com/api/fccusers/top/${this.state.list}`);
+  }
+}
+
+const app = document.getElementById('app');
+
+ReactDOM.render(<Layout />, app);
